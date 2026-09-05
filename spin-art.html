@@ -1,0 +1,65 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no" />
+<title>Spin Art</title>
+<link rel="icon" type="image/png" href="favicon.png" />
+<link rel="stylesheet" href="styles.css" />
+<link rel="stylesheet" href="spin-art.css" />
+</head>
+<body>
+  <div class="app">
+    <header class="app-header">
+      <h1>Spin Art</h1>
+      <nav class="app-nav" aria-label="Apps">
+        <a class="app-nav-link" href="index.html">Wheel</a>
+        <a class="app-nav-link is-active" href="spin-art.html">Spin Art</a>
+      </nav>
+      <button id="clear-btn" class="ghost-btn">Clear</button>
+    </header>
+
+    <main class="stage">
+      <div class="disc-wrap">
+        <canvas
+          id="disc"
+          width="640"
+          height="640"
+          tabindex="0"
+          role="img"
+          aria-label="Spin art disc. Drag or swipe to spin it, click and hold to drip paint."
+        ></canvas>
+      </div>
+
+      <div class="palette" role="group" aria-label="Paint color">
+        <button class="swatch is-selected" data-color="#ef476f" style="--sw: #ef476f" aria-label="Pink red"></button>
+        <button class="swatch" data-color="#ff6b35" style="--sw: #ff6b35" aria-label="Orange"></button>
+        <button class="swatch" data-color="#ffd166" style="--sw: #ffd166" aria-label="Yellow"></button>
+        <button class="swatch" data-color="#06d6a0" style="--sw: #06d6a0" aria-label="Green"></button>
+        <button class="swatch" data-color="#118ab2" style="--sw: #118ab2" aria-label="Teal blue"></button>
+        <button class="swatch" data-color="#2b50ff" style="--sw: #2b50ff" aria-label="Blue"></button>
+        <button class="swatch" data-color="#7b2ff7" style="--sw: #7b2ff7" aria-label="Purple"></button>
+        <button class="swatch" data-color="#f72585" style="--sw: #f72585" aria-label="Magenta"></button>
+        <button class="swatch" data-color="#0b0b12" style="--sw: #0b0b12" aria-label="Black"></button>
+        <button class="swatch" data-color="#ffffff" style="--sw: #ffffff" aria-label="White"></button>
+        <label class="swatch swatch-custom" aria-label="Custom color">
+          <input type="color" id="custom-color" value="#ff00aa" />
+        </label>
+      </div>
+
+      <div class="toolbar">
+        <div class="brush-group" role="group" aria-label="Brush size">
+          <button class="brush-btn" data-size="3" aria-label="Thin brush">S</button>
+          <button class="brush-btn is-selected" data-size="6" aria-label="Medium brush">M</button>
+          <button class="brush-btn" data-size="11" aria-label="Thick brush">L</button>
+        </div>
+        <button id="save-btn" class="secondary-btn">Save PNG</button>
+      </div>
+
+      <p class="hint">Drag or swipe to spin the disc &mdash; click and hold anywhere on it to drip paint while it spins.</p>
+    </main>
+  </div>
+
+  <script src="spin-art.js"></script>
+</body>
+</html>
