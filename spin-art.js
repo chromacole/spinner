@@ -5,6 +5,9 @@
   const DISC_RADIUS = DISC_SIZE / 2 - 6;
   const FRICTION_PER_FRAME_60FPS = 0.985; // same viscous decay feel as the wheel
   const VELOCITY_FLOOR = 0.01;
+  const MAX_ANGULAR_VELOCITY = 60; // clamp so repeated spin-clicks can't run away
+  const SPIN_KICK_MIN = 6; // angularVelocity added at slider value 1
+  const SPIN_KICK_MAX = 42; // angularVelocity added at slider value 10
   const POUR_INTERVAL_MS = 35; // throttle new paint clusters while holding down
   const PARTICLE_FRICTION_60FPS = 0.9; // how fast a flung streak decelerates
   const PARTICLE_SPEED_FLOOR = 4; // px/s below which a streak is considered "dry"
@@ -12,10 +15,7 @@
   // ---------- State ----------
   let discAngle = 0;
   let angularVelocity = 0;
-  let isDragging = false;
   let isPouring = false;
-  let dragCenter = { x: 0, y: 0 };
-  let lastAngle = 0;
   let lastTime = 0;
   let lastPourTime = 0;
   let pourScreenX = 0;
@@ -30,6 +30,8 @@
   const ctx = canvas.getContext("2d");
   const clearBtn = document.getElementById("clear-btn");
   const saveBtn = document.getElementById("save-btn");
+  const spinBtn = document.getElementById("spin-btn");
+  const speedSlider = document.getElementById("speed-slider");
   const swatches = Array.from(document.querySelectorAll(".swatch[data-color]"));
   const customColorInput = document.getElementById("custom-color");
   const brushBtns = Array.from(document.querySelectorAll(".brush-btn"));
@@ -50,21 +52,6 @@
     paintCtx.fillStyle = "#f5f2e8";
     paintCtx.fill();
     paintCtx.restore();
-  }
-
-  // ---------- Geometry ----------
-  function normalizeAngle(a) {
-    const twoPi = Math.PI * 2;
-    a = a % twoPi;
-    if (a < 0) a += twoPi;
-    return a;
-  }
-
-  function shortestDelta(from, to) {
-    let d = normalizeAngle(to) - normalizeAngle(from);
-    if (d > Math.PI) d -= Math.PI * 2;
-    if (d < -Math.PI) d += Math.PI * 2;
-    return d;
   }
 
   // ---------- Particles (flung paint streaks) ----------
@@ -150,9 +137,9 @@
     const dt = Math.min((timestamp - lastTime) / 1000, 0.05);
     lastTime = timestamp;
 
-    // Friction-based coasting always runs, even while the pointer is down —
-    // holding still to pour paint shouldn't freeze an already-spinning disc.
-    // Active dragging (onPointerMove) layers direct rotation on top of this.
+    // The disc's rotation is driven entirely by the Spin button/slider (and
+    // friction decay) — pouring paint never touches discAngle or
+    // angularVelocity, so you can drip while it's spinning without stopping it.
     discAngle += angularVelocity * dt;
     const decay = Math.pow(FRICTION_PER_FRAME_60FPS, dt * 60);
     angularVelocity *= decay;
@@ -172,13 +159,23 @@
     rafHandle = requestAnimationFrame(tick);
   }
 
-  // ---------- Pointer (mouse + touch): spin + pour ----------
-  function angleFromEvent(evt, rect) {
-    const dx = evt.clientX - dragCenter.x;
-    const dy = evt.clientY - dragCenter.y;
-    return Math.atan2(dy, dx);
+  // ---------- Spin control (button + speed slider) ----------
+  // Clicking Spin gives the disc a burst of rotational speed — set by the
+  // slider — which then decays naturally via friction, same physics as a
+  // flick. Click again (or hold Space) to keep it going.
+  function spinKick() {
+    const sliderValue = Number(speedSlider.value); // 1–10
+    const t = (sliderValue - 1) / 9; // normalize to 0–1
+    const strength = SPIN_KICK_MIN + t * (SPIN_KICK_MAX - SPIN_KICK_MIN);
+    const direction = angularVelocity === 0 ? (Math.random() < 0.5 ? -1 : 1) : Math.sign(angularVelocity) || 1;
+    angularVelocity += direction * strength;
+    if (angularVelocity > MAX_ANGULAR_VELOCITY) angularVelocity = MAX_ANGULAR_VELOCITY;
+    if (angularVelocity < -MAX_ANGULAR_VELOCITY) angularVelocity = -MAX_ANGULAR_VELOCITY;
   }
 
+  spinBtn.addEventListener("click", spinKick);
+
+  // ---------- Pointer (mouse + touch): pour only, never affects the spin ----------
   function canvasLocalFromEvent(evt, rect) {
     const scaleX = DISC_SIZE / rect.width;
     const scaleY = DISC_SIZE / rect.height;
@@ -190,48 +187,28 @@
 
   function onPointerDown(evt) {
     const rect = canvas.getBoundingClientRect();
-    dragCenter = { x: rect.left + rect.width / 2, y: rect.top + rect.height / 2 };
-    isDragging = true;
-    lastAngle = angleFromEvent(evt);
-    lastTime = performance.now();
-
     const local = canvasLocalFromEvent(evt, rect);
     const distFromCenter = Math.hypot(local.x - DISC_SIZE / 2, local.y - DISC_SIZE / 2);
-    if (distFromCenter <= DISC_RADIUS) {
-      isPouring = true;
-      pourScreenX = local.x;
-      pourScreenY = local.y;
-      lastPourTime = 0; // pour immediately
-    }
+    if (distFromCenter > DISC_RADIUS) return;
+
+    isPouring = true;
+    pourScreenX = local.x;
+    pourScreenY = local.y;
+    lastPourTime = 0; // pour immediately
 
     canvas.setPointerCapture(evt.pointerId);
     canvas.focus();
   }
 
   function onPointerMove(evt) {
-    if (!isDragging) return;
-    const now = performance.now();
-    const currentAngle = angleFromEvent(evt);
-    const delta = shortestDelta(lastAngle, currentAngle);
-    const dt = Math.max(now - lastTime, 1) / 1000;
-
-    discAngle += delta;
-    const instVelocity = delta / dt;
-    angularVelocity = angularVelocity * 0.75 + instVelocity * 0.25;
-
-    lastAngle = currentAngle;
-    lastTime = now;
-
-    if (isPouring) {
-      const rect = canvas.getBoundingClientRect();
-      const local = canvasLocalFromEvent(evt, rect);
-      pourScreenX = local.x;
-      pourScreenY = local.y;
-    }
+    if (!isPouring) return;
+    const rect = canvas.getBoundingClientRect();
+    const local = canvasLocalFromEvent(evt, rect);
+    pourScreenX = local.x;
+    pourScreenY = local.y;
   }
 
   function onPointerUp(evt) {
-    isDragging = false;
     isPouring = false;
     try {
       canvas.releasePointerCapture(evt.pointerId);
@@ -248,7 +225,7 @@
   canvas.addEventListener("keydown", (evt) => {
     if (evt.code === "Space") {
       evt.preventDefault();
-      angularVelocity += (Math.random() < 0.5 ? -1 : 1) * (10 + Math.random() * 8);
+      spinKick();
     }
   });
 
