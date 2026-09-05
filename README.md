@@ -6,9 +6,10 @@ plain HTML/CSS/JS site with no build step — ready to host on GitHub Pages:
 - **Spin the Wheel** (`index.html`) — a game-show style spinner wheel you can
   play with a mouse (click &amp; drag) or a finger (swipe/touch).
 - **Spin Art** (`spin-art.html`) — a virtual spin-art disc: tap Spin to get it
-  going, then click and hold to drip paint that flings outward while it
-  spins, just like the real machines. Save your art as a PNG when you're
-  done.
+  going (it keeps spinning for roughly 25 seconds before it drifts to a
+  stop), then click and hold to drip paint that flings outward while it
+  spins, just like the real machines. Adjust color opacity with the
+  Opacity slider. Save your art as a PNG when you're done.
 
 A small nav in the header switches between the two pages.
 
@@ -81,9 +82,10 @@ are no underscore-prefixed files, but it's a safe default for static sites).
   (starting a pour would kill your spin, and vice versa). Now:
   - **Spin** — the button and speed slider beside the disc give it a burst
     of rotational speed (strength set by the slider), which then decays
-    naturally via friction, just like a flick. Click again (or press Space
-    while the disc is focused) to keep it going. This never reacts to
-    anything you do with the mouse on the disc itself.
+    naturally via friction over roughly 20&ndash;27 seconds depending on the
+    slider, just like a flick. Click again (or press Space while the disc is
+    focused) to keep it going. This never reacts to anything you do with the
+    mouse on the disc itself.
   - **Pouring** — click and hold anywhere on the disc to drip your selected
     color; this only ever moves the pour point, never the disc's rotation.
     Paint is flung outward from the drop point, and the faster the disc is
@@ -92,7 +94,10 @@ are no underscore-prefixed files, but it's a safe default for static sites).
     the disc keeps spinning independently underneath, dragging the pour
     point from the center outward traces a spiral.
 - **Colors & brush size** — pick from the swatch row or use the custom color
-  picker; brush size (S/M/L) controls streak thickness.
+  picker; brush size (S/M/L) controls streak thickness. The **Opacity**
+  slider in the toolbar controls how transparent new paint strokes are, from
+  faint washes to fully solid; each stroke keeps the opacity it was poured
+  with, so you can layer washes of different strength.
 - **Clear** wipes the disc back to blank. **Save PNG** downloads the current
   artwork (just the disc, not the whole page) as `spin-art.png`.
 
