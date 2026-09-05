@@ -1,13 +1,20 @@
-# Spin the Wheel
+# Spin the Wheel + Spin Art
 
-A game-show style spinner wheel you can play with a mouse (click &amp; drag) or a
-finger (swipe/touch), built as a plain HTML/CSS/JS site with no build step —
-ready to host on GitHub Pages.
+Two little apps that share the same "grab and spin" mechanic, built as a
+plain HTML/CSS/JS site with no build step — ready to host on GitHub Pages:
+
+- **Spin the Wheel** (`index.html`) — a game-show style spinner wheel you can
+  play with a mouse (click &amp; drag) or a finger (swipe/touch).
+- **Spin Art** (`spin-art.html`) — a virtual spin-art disc: spin it the same
+  way, then click and hold to drip paint that flings outward while it spins,
+  just like the real machines. Save your art as a PNG when you're done.
+
+A small nav in the header switches between the two pages.
 
 ## Try it locally
 
-Just open `index.html` in a browser, or serve the folder with any static
-server, e.g.:
+Just open `index.html` (or `spin-art.html`) in a browser, or serve the
+folder with any static server, e.g.:
 
 ```
 npx serve .
@@ -62,17 +69,38 @@ are no underscore-prefixed files, but it's a safe default for static sites).
   available (e.g. a locked-down preview), it just keeps working in memory
   for that session.
 
+## Spin Art
+
+- **The disc** is drawn on a `<canvas>`, with a permanent offscreen "paint
+  layer" underneath it that the visible canvas just rotates and redraws each
+  frame — so painted marks stay stuck to the disc as it spins, exactly like
+  paint on a real spinning surface.
+- **Spinning** uses the same drag/swipe-to-flick physics as the wheel.
+- **Pouring** — click and hold anywhere on the disc to drip your selected
+  color. Paint is flung outward from the drop point; the faster the disc is
+  spinning when you pour, the further and straighter the streaks fling
+  (mimicking centrifugal force). Holding still just pours in place; dragging
+  while pouring drags the paint trail with it.
+- **Colors & brush size** — pick from the swatch row or use the custom color
+  picker; brush size (S/M/L) controls streak thickness.
+- **Clear** wipes the disc back to blank. **Save PNG** downloads the current
+  artwork (just the disc, not the whole page) as `spin-art.png`.
+
 ## Files
 
-- `index.html` — page structure
-- `styles.css` — dark, game-show-ish theme; responsive down to phone widths
+- `index.html` / `spin-art.html` — page structure for each app
+- `styles.css` — shared dark theme, nav, and the wheel's own styles
+- `spin-art.css` — spin-art-specific styles (disc, palette, toolbar)
 - `script.js` — wheel drawing, spin physics, customize panel, persistence
+- `spin-art.js` — spin-art disc rendering, spin physics, paint particles
 - `.nojekyll` — disables Jekyll processing on GitHub Pages
 
 ## Ideas for next steps
 
-- Add a confetti burst or bigger celebration animation on landing.
+- Add a confetti burst or bigger celebration animation on landing (wheel).
 - Weight segments unevenly (e.g. bias probability instead of equal-sized
-  wedges) if you want some outcomes rarer than others.
+  wedges) if you want some outcomes rarer than others (wheel).
 - Add a shareable URL that encodes the segment list, so a customized wheel
-  can be linked directly.
+  can be linked directly (wheel).
+- Let spin art streak color fade/thin out over their length, or add a
+  "splatter" mode that flings several colors from one pour (spin art).
