@@ -11,6 +11,67 @@
   <div class="app">
     <header class="app-header">
       <h1>Spin the Wheel</h1>
+      <nav class="app-nav" aria-label="Apps">
+        <a class="app-nav-link is-active" href="index.html">Wheel</a>
+        <a class="app-nav-link" href="spin-art.html">Spin Art</a>
+      </nav>
+      <button id="customize-toggle" class="ghost-btn" aria-expanded="false" aria-controls="customize-panel">
+        Customize
+      </button>
+    </header>
+
+    <main class="stage">
+      <div class="wheel-wrap">
+        <div class="pointer" aria-hidden="true"></div>
+        <canvas
+          id="wheel"
+          width="600"
+          height="600"
+          tabindex="0"
+          role="button"
+          aria-label="Spin wheel. Drag or swipe to spin, or press space."
+        ></canvas>
+        <button id="hub-spin" class="hub-btn" aria-label="Spin">SPIN</button>
+      </div>
+
+      <div id="result-banner" class="result-banner" hidden>
+        <span id="result-text"></span>
+        <button id="result-dismiss" class="ghost-btn small">&times;</button>
+      </div>
+
+      <p class="hint">Click &amp; drag (or swipe) the wheel to spin it &mdash; or tap the center button.</p>
+    </main>
+
+    <aside id="customize-panel" class="customize-panel" hidden>
+      <div class="customize-header">
+        <h2>Segments</h2>
+        <button id="customize-close" class="ghost-btn small" aria-label="Close">&times;</button>
+      </div>
+      <div id="segment-list" class="segment-list"></div>
+      <div class="customize-actions">
+        <button id="add-segment" class="secondary-btn">+ Add segment</button>
+        <button id="reset-segments" class="ghost-btn">Reset to defaults</button>
+      </div>
+      <p class="customize-note">Changes save automatically in this browser.</p>
+    </aside>
+  </div>
+
+  <script src="script.js"></script>
+</body>
+</html>
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no" />
+<title>Spin the Wheel</title>
+<link rel="icon" type="image/png" href="favicon.png" />
+<link rel="stylesheet" href="styles.css" />
+</head>
+<body>
+  <div class="app">
+    <header class="app-header">
+      <h1>Spin the Wheel</h1>
       <button id="customize-toggle" class="ghost-btn" aria-expanded="false" aria-controls="customize-panel">
         Customize
       </button>
