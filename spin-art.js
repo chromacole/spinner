@@ -3,7 +3,7 @@
 
   const DISC_SIZE = 640; // internal canvas resolution (matches width/height attrs)
   const DISC_RADIUS = DISC_SIZE / 2 - 6;
-  const FRICTION_PER_FRAME_60FPS = 0.985; // same viscous decay feel as the wheel
+  const FRICTION_PER_FRAME_60FPS = 0.99488; // tuned for ~25s spin duration at default speed
   const VELOCITY_FLOOR = 0.01;
   const MAX_ANGULAR_VELOCITY = 60; // clamp so repeated spin-clicks can't run away
   const SPIN_KICK_MIN = 6; // angularVelocity added at slider value 1
@@ -22,6 +22,7 @@
   let pourScreenY = 0;
   let currentColor = "#ef476f";
   let currentBrush = 6;
+  let currentOpacity = 1;
   let particles = [];
   let rafHandle = null;
 
@@ -35,6 +36,7 @@
   const swatches = Array.from(document.querySelectorAll(".swatch[data-color]"));
   const customColorInput = document.getElementById("custom-color");
   const brushBtns = Array.from(document.querySelectorAll(".brush-btn"));
+  const opacitySlider = document.getElementById("opacity-slider");
 
   // Offscreen "paint layer" — the permanent record of the artwork, in the
   // disc's own rotating reference frame. The visible canvas just rotates
@@ -50,6 +52,7 @@
     paintCtx.beginPath();
     paintCtx.arc(DISC_SIZE / 2, DISC_SIZE / 2, DISC_RADIUS, 0, Math.PI * 2);
     paintCtx.fillStyle = "#f5f2e8";
+    paintCtx.globalAlpha = 1;
     paintCtx.fill();
     paintCtx.restore();
   }
@@ -78,6 +81,7 @@
         speed: jitterSpeed + spinKick,
         width: currentBrush * (0.7 + Math.random() * 0.6),
         color: currentColor,
+        opacity: currentOpacity,
       });
     }
   }
@@ -103,6 +107,7 @@
       paintCtx.lineTo(x1, y1);
       paintCtx.strokeStyle = p.color;
       paintCtx.lineWidth = p.width;
+      paintCtx.globalAlpha = p.opacity;
       paintCtx.stroke();
 
       if (p.speed > PARTICLE_SPEED_FLOOR && p.radius < DISC_RADIUS) {
@@ -251,6 +256,10 @@
       btn.classList.add("is-selected");
       currentBrush = Number(btn.dataset.size);
     });
+  });
+
+  opacitySlider.addEventListener("input", () => {
+    currentOpacity = Number(opacitySlider.value) / 100;
   });
 
   clearBtn.addEventListener("click", () => {
