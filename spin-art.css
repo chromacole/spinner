@@ -135,3 +135,26 @@
   background: var(--accent);
   color: #1a1035;
 }
+
+.opacity-group {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  background: var(--panel);
+  border: 1px solid var(--panel-border);
+  border-radius: 10px;
+  padding: 8px 14px;
+}
+
+.opacity-label {
+  color: var(--text-dim);
+  font-size: 0.78rem;
+  font-weight: 600;
+  white-space: nowrap;
+}
+
+#opacity-slider {
+  width: 120px;
+  accent-color: var(--accent);
+  cursor: pointer;
+}
