@@ -61,10 +61,14 @@
           <button class="brush-btn is-selected" data-size="6" aria-label="Medium brush">M</button>
           <button class="brush-btn" data-size="11" aria-label="Thick brush">L</button>
         </div>
+        <div class="opacity-group" role="group" aria-label="Paint opacity">
+          <label class="opacity-label" for="opacity-slider">Opacity</label>
+          <input type="range" id="opacity-slider" min="10" max="100" value="100" step="1" />
+        </div>
         <button id="save-btn" class="secondary-btn">Save PNG</button>
       </div>
 
-      <p class="hint">Tap Spin to get the disc going &mdash; then click and hold anywhere on it (and drag outward for a spiral) to drip paint while it spins.</p>
+      <p class="hint">Tap Spin to get the disc going &mdash; then click and hold anywhere on it (and drag outward for a spiral) to drip paint while it spins. Use the Opacity slider to make colors more transparent or fully solid.</p>
     </main>
   </div>
 
